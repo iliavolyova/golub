@@ -5,8 +5,9 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.2.*",
-        "redbaron76/googlavel": "1.0"
-	},
+        "redbaron76/googlavel": "1.0",
+        "phpmailer/phpmailer": "dev-master"
+    },
 	"autoload": {
 		"classmap": [
 			"app/commands",

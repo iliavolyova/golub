@@ -10,9 +10,19 @@ return [
     // Definition of service specific values like scopes, OAuth token URLs, etc
     'services' => array(
 
-        'mailreader' => array(
-            'scope' => 'https://www.googleapis.com/auth/gmail.readonly'
+        'gmail' => array(
+            'scope' => ['https://www.googleapis.com/auth/gmail.readonly',
+                        'https://www.googleapis.com/auth/gmail.compose']
         ),
+        'oauth2' => array(
+            'scope' => array(
+                'https://www.googleapis.com/auth/plus.login',
+                'https://www.googleapis.com/auth/userinfo.profile',
+                'https://www.googleapis.com/auth/userinfo.email'
+            )
+        ),
+
+
         /*'books' => [
             'scope' => 'https://www.googleapis.com/auth/books'
         ]*/
