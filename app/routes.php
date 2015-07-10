@@ -58,11 +58,18 @@ function send_mail($service, $moja_adresa, $primatelj, $subject, $msg)
     $service->users_messages->send("me", $m); // me je magicna varijabla, al svejedno treba $moja_adresa
 }
 
-function refresh_db($service)
+function refresh_db($service, $moja_adresa)
 {
 
     $nastavi = true;
     $stranica = 0;
+
+    $limitirano = false;
+
+    if (Email::where('account', 'LIKE', '%' . $moja_adresa . '%')->count() == 0) {
+        $limitirano = true;
+        $limit = 100;
+    }
 
     while ($nastavi) {
 
@@ -105,6 +112,7 @@ function refresh_db($service)
             $p->receiver = $receiver;
             $p->google_id = $message->id;
             $p->subject = $subject;
+            $p->account = $moja_adresa;
 
             $pokusaj1 = base64_decode($message->getPayload()->getBody()->getData());
             $pokusaj2 = $message->getPayload()->getParts();
@@ -125,6 +133,16 @@ function refresh_db($service)
             //echo "<br>content: " . $p->content;
 
             $p->save();
+
+            if ($limitirano)
+            {
+                --$limit;
+                if (!$limit)
+                {
+                    $nastavi = false;
+                    break;
+                }
+            }
         }
 
         if ($nastavi == false) // pozvan vec break
@@ -168,7 +186,7 @@ Route::get('/protected', function()
 
     echo "Korisnik: $adresa <br />";
 
-    refresh_db($service);
+    refresh_db($service, $adresa);
     dump_db();
 
 
