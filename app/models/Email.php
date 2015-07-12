@@ -13,6 +13,6 @@ class Email extends Eloquent {
 
     protected $table = 'emails';
 
-    protected $fillable = array("google_id", 'sender','receiver','subject','content', 'tstamp');
+    protected $fillable = array("google_id", 'account', 'sender','receiver','subject','content', 'tstamp');
 
 }

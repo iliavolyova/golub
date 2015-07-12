@@ -58,16 +58,86 @@ function send_mail($service, $moja_adresa, $primatelj, $subject, $msg)
     $service->users_messages->send("me", $m); // me je magicna varijabla, al svejedno treba $moja_adresa
 }
 
-function refresh_db($service)
+function pohrani_poruku($service, $moja_adresa, $message)
 {
+    $sender = '';
+    $receiver = '';
+    $hdrs = $message->getPayload()->getHeaders();
+    foreach ($hdrs as $komad) {
+        if ($komad->getName() == "From")
+            $sender = $komad->getValue();
+        if ($komad->getName() == "To")
+            $receiver = $komad->getValue();
+        if ($komad->getName() == "Subject")
+            $subject = $komad->getValue();
+    }
+
+    $p = new Email;
+
+    $p->sender = $sender;
+    $p->receiver = $receiver;
+    $p->google_id = $message->id;
+    $p->subject = $subject;
+    $p->account = $moja_adresa;
+
+    $pokusaj1 = base64_decode($message->getPayload()->getBody()->getData());
+    $pokusaj2 = $message->getPayload()->getParts();
+
+    $poruka = '';
+    foreach ($pokusaj2 as $tp) {
+        //echo '>'.$tp->getMimeType()."<";
+        if ('text/plain' == $tp->getMimeType())
+            $poruka = base64_decode($tp->getBody()->getData());
+    }
+
+    if (strlen($pokusaj1) > strlen($poruka))
+        $poruka = $pokusaj1;
+
+    $p->content = $poruka;
+
+    $p->save();
+}
+
+
+function preuzmi_poruke($service, $client, $moja_adresa, $idevi)
+{
+    $client->setUseBatch(true);
+    $batch = new Google_Http_Batch($client);
+
+    foreach (array_reverse($idevi) as $id)
+    {
+        $req = $service->users_messages->get('me', $id);
+        $batch->add($req, $id);
+    }
+
+    $results = $batch->execute();
+    $client->setUseBatch(false);
+
+    foreach ($results as $result)
+    {
+        //var_dump($result);
+        pohrani_poruku($service, $moja_adresa, $result);
+    }
+}
+
+function refresh_db($service, $client, $moja_adresa)
+{
+    $limitirano = false;
+    $limit = 0;
+
+    if (Email::where('account', 'LIKE', '%' . $moja_adresa . '%')->count() == 0) {
+        $limitirano = true;
+        $limit = 50;
+    }
 
     $nastavi = true;
     $stranica = 0;
 
+    $idevi = array();
+
     while ($nastavi) {
 
-        $params = array('q' => '-in:chats', 'maxResults' => '2');
-
+        $params = array('q' => '-in:chats', 'maxResults' => (string)10);
         if ($stranica != 0)
             $params['pageToken'] = $stranica;
 
@@ -82,49 +152,17 @@ function refresh_db($service)
                 break; // vec imamo
             }
 
-            $message = $service->users_messages->get('me', $msg->id);
-            $snip = $message->getSnippet();
-            //echo "{$snip} <br>";
+            $idevi[] = $msg->id;
 
-            $sender = '';
-            $receiver = '';
-            $hdrs = $message->getPayload()->getHeaders();
-            foreach ($hdrs as $komad) {
-                if ($komad->getName() == "From")
-                    $sender = $komad->getValue();
-                if ($komad->getName() == "To")
-                    $receiver = $komad->getValue();
-                if ($komad->getName() == "Subject")
-                    $subject = $komad->getValue();
+            if ($limitirano)
+            {
+                --$limit;
+                if (!$limit)
+                {
+                    $nastavi = false;
+                    break;
+                }
             }
-            //echo $sender . " -> " . $receiver;
-
-            $p = new Email;
-
-            $p->sender = $sender;
-            $p->receiver = $receiver;
-            $p->google_id = $message->id;
-            $p->subject = $subject;
-
-            $pokusaj1 = base64_decode($message->getPayload()->getBody()->getData());
-            $pokusaj2 = $message->getPayload()->getParts();
-
-            $poruka = '';
-            foreach ($pokusaj2 as $tp) {
-                //echo '>'.$tp->getMimeType()."<";
-                if ('text/plain' == $tp->getMimeType())
-                    $poruka = base64_decode($tp->getBody()->getData());
-            }
-
-            if (strlen($pokusaj1) > strlen($poruka))
-                $poruka = $pokusaj1;
-
-            //echo $pokusaj1 . " - - " . $poruka . " /// ";
-
-            $p->content = $poruka;
-            //echo "<br>content: " . $p->content;
-
-            $p->save();
         }
 
         if ($nastavi == false) // pozvan vec break
@@ -135,6 +173,8 @@ function refresh_db($service)
         if ($stranica)
              $nastavi = true;
     }
+
+    preuzmi_poruke($service, $client, $moja_adresa, $idevi);
 }
 
 function dump_db()
@@ -145,6 +185,7 @@ function dump_db()
 
     foreach ($mailovi as $mail)
     {
+        $mail->content = str_replace("\n", "<br />", $mail->content);
         echo "<tr>";
         echo "<td>$mail->sender</td>";
         echo "<td>$mail->receiver</td>";
@@ -162,13 +203,14 @@ Route::get('/protected', function()
 
     $srv2 = Googlavel::getService('Oauth2');
     $tok = Googlavel::getToken();
+    $client = Googlavel::getClient();
 
     $tok = json_decode($tok)->access_token;
     $adresa = $srv2->tokeninfo(['access_token' => $tok])->getEmail();
 
     echo "Korisnik: $adresa <br />";
 
-    refresh_db($service);
+    refresh_db($service, $client, $adresa);
     dump_db();
 
 
