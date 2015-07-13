@@ -190,8 +190,9 @@ class HomeController extends BaseController {
         Notification::infoInstant("Favorited!");
 
         $id = Input::get('messageId');
-        var_dump($id);
 
-        return Response::json(['your response here']);
+        // ovdje treba promijeniti vrijednost flaga fav za $id emaila i to je to.
+
+        return Response::json(array('status' => 'success'));
     }
 }

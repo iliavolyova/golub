@@ -116,7 +116,7 @@ var forward = function(msgId){
 
 };
 
-var compose = function(msgId){
+var compose = function(){
     $('#modal-title').html("Compose new message");
 
     $('#tofield').val('');
@@ -128,11 +128,12 @@ var compose = function(msgId){
 };
 
 var fav = function(msgId){
+    console.log("ajax");
     $.ajax({
         type: "POST",
         url: '/fav',
-        data: {messageId: msgId},
-        dataType: 'JSON'
+        dataType: 'json',
+        data: {messageId: msgId}
     }).done(function(msg){
         console.log("returned: ", msg);
     });

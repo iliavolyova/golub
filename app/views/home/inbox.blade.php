@@ -14,7 +14,7 @@
 
                             <span class="row">
                                 <span class="col-md-1">
-                                    <a href="#"><button type="checkbox" class="btn-link glyphicon glyphicon-star-empty" onclick=fav({{$mail->id}})></button></a>
+                                    <a class="btn-link" onclick=fav({{$mail->id}})><input type="checkbox" class="glyphicon glyphicon-star-empty"></a>
                                 </span>
                                 <a data-toggle="collapse" data-parent="#accordion" href="{{'#msg' . $mail->id}}">
                                     <span id="{{'mailsender' . $mail->id}}" class="col-md-3">{{ $mail->sender }}</span>

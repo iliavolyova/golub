@@ -9,6 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=8;FF=3;OtherUA=4">
+    <base href="{{ URL::to('/') }}"/>
     <title>{{ (!empty($head->title) ? $head->title . ' - ' : '') }} @lang('app.app.name')</title>
     <meta name="description" content="{{ (!empty($head->description) ? $head->description : Lang::get('app.app.name')) }}">
     <meta name="author" content="Ellipse Synergie">
