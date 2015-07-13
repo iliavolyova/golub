@@ -37,7 +37,7 @@ class HomeController extends BaseController {
             if ($komad->getName() == "Subject")
                 $subject = $komad->getValue();
             if ($komad->getName() == "Date") {
-                $trm = substr($komad->getValue(), 0, 31);
+                $trm = trim(substr($komad->getValue(), 0, 31));
                 $date = DateTime::createFromFormat( 'D, d M Y H:i:s O', $trm);
                 $tsmp =  (string)$date->getTimestamp();
             }
