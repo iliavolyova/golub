@@ -43,3 +43,7 @@
     -webkit-justify-content : center;
     justify-content : center;
 }
+
+.modal-open {
+    overflow: scroll;
+}

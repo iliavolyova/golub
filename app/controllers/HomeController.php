@@ -154,15 +154,34 @@ class HomeController extends BaseController {
         $client = Googlavel::getClient();
 
         $tok = json_decode($tok)->access_token;
-        $adresa = $srv2->tokeninfo(['access_token' => $tok])->getEmail();
-        View::share('username', $adresa);
+        try {
+            $adresa = $srv2->tokeninfo(['access_token' => $tok])->getEmail();
+        } catch (Google_Auth_Exception $e){
+            Notification::error("Google API token expired. Please log in again.");
+            return Redirect::to('/');
+        }
 
-        echo "Korisnik: $adresa <br />";
+        View::share('username', $adresa);
 
         $this->refresh_db($service, $client, $adresa);
 
         $mailovi = Email::all();
 
         $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
+    }
+
+    public function outbox()
+    {
+
+    }
+
+    public function favorites()
+    {
+
+    }
+
+    public function sendmail()
+    {
+        dd(Input::get('To'));
     }
 }

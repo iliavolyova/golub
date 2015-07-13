@@ -1,6 +1,6 @@
-
-
 <div class="container">
+    {{ Notification::showAll() }}
+
     <div class="page-header">
         <h2>Inbox</h2>
     </div>
@@ -11,26 +11,25 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="{{"#" . $mail->id}}">
+                            <a data-toggle="collapse" data-parent="#accordion" href="{{'#msg' . $mail->id}}">
                                 <span class="row">
-                                    <span class="col-md-4">{{ $mail->sender }}</span>
-                                    <span class="col-md-8">{{ $mail->subject }}</span>
+                                    <span id="{{'mailsender' . $mail->id}}" class="col-md-4">{{ $mail->sender }}</span>
+                                    <span id="{{'mailsubject' . $mail->id}}" class="col-md-8">{{ $mail->subject }}</span>
                                 </span>
                             </a>
                         </h4>
                     </div>
-                    <div id="{{$mail->id}}" class="panel-collapse collapse">
+                    <div id="{{'msg' . $mail->id}}" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="well">{{ $mail->content }}</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="btn btn-info">Reply</div>
-                                </div>
-                            </div>
+                            <span id="{{'mailcontent' . $mail->id}}">
+                                {{ $mail->content }}
+                            </span>
+
+                            <br><hr/>
+                            <span class="btn-group">
+                                <button class="btn btn-info" onclick=reply({{$mail->id}})>Reply</button>
+                                <button class="btn btn-info" onclick=forward({{$mail->id}})>Forward</button>
+                            </span>
                         </div>
                     </div>
                 </div>

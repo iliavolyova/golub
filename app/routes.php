@@ -17,13 +17,13 @@ Route::get('/logout', function()
     // perform a logout with redirect
     return Googlavel::logout('/');
 });
-
-// Login/Landing page
 Route::get('/', array('as' => 'login', 'uses' => 'LoginController@login'));
 
-// Inbox
+
 Route::get('/inbox', array('as' => 'inbox', 'uses' => 'HomeController@inbox'));
+Route::get('/outbox', array('as' => 'inbox', 'uses' => 'HomeController@outbox'));
+Route::get('/favorites', array('as' => 'inbox', 'uses' => 'HomeController@favorites'));
 
+Route::post('/sendmail', array('as' => 'sendmail', 'uses' => 'HomeController@sendmail'));
 
-// Errors
 Route::get('404', array('as' => '404', 'uses' => 'ErrorController@get404'));

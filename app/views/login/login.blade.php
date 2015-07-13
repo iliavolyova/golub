@@ -2,6 +2,8 @@
 
 @section('body')
 <div class="container">
+    {{ Notification::showAll() }}
+
     <div class="jumbotron vertical-center">
         <div class="container text-center">
             <h1>@lang('home.header')</h1>
