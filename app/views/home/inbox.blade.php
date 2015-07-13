@@ -47,9 +47,9 @@
                             <br><hr/>
                             <span class="btn-group">
                                 @if($viewing != 'outbox')
-                                <button class="btn btn-info" onclick=reply({{$mail->id}})>@lang('home.inbox.reply')</button>
+                                <button class="btn btn-info" onclick=reply({{$mail->id}})><span class='glyphicon glyphicon-share-alt'></span> @lang('home.inbox.reply')</button>
                                 @endif
-                                <button class="btn btn-info" onclick=forward({{$mail->id}})>@lang('home.inbox.forward')</button>
+                                <button class="btn btn-info" onclick=forward({{$mail->id}})><span class="glyphicon glyphicon-forward"></span> @lang('home.inbox.forward')</button>
                             </span>
                         </div>
                     </div>
