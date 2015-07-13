@@ -13,8 +13,11 @@ return array(
     ),
 
     'inbox' => array(
-        'title' => 'Primljene poruke'
-
+        'inbox' => 'Primljene poruke',
+        'outbox' => 'Poslane poruke',
+        'favorites' => 'Označene poruke',
+        'reply' => 'Odgovori',
+        'forward' => 'Proslijedi'
     ),
 
     'modal' => array(
@@ -22,7 +25,9 @@ return array(
         'subject' => 'Naslov',
         'message' => 'Poruka',
         'send' => 'Šalji',
-        'cancel' => 'Odustani'
+        'cancel' => 'Odustani',
+        'required' => 'Ovo polje je obavezno',
+        'valid_email' => 'E-mail adresa mora biti valjana'
     )
 
 );

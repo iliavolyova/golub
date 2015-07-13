@@ -219,9 +219,7 @@ class HomeController extends BaseController {
         $mailovi = Email::where('receiver', 'LIKE', '%' . $adresa . '%')->get();
 
         View::share('username', $adresa);
-        View::share('inbox_aktivan', 'class="active"');
-        View::share('outbox_aktivan', '');
-        View::share('fav_aktivan', '');
+        View::share('viewing', 'inbox');
         $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
 
     }
@@ -233,10 +231,8 @@ class HomeController extends BaseController {
         $mailovi = Email::where('sender', 'LIKE', '%' . $adresa . '%')->get();
 
         View::share('username', $adresa);
-        View::share('inbox_aktivan', '');
-        View::share('outbox_aktivan', 'class="active"');
-        View::share('fav_aktivan', '');
-        $this->layout->content = View::make('home.outbox')->with('mailovi', $mailovi);
+        View::share('viewing', 'outbox');
+        $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
     }
 
     public function favorites()
@@ -246,10 +242,8 @@ class HomeController extends BaseController {
         $mailovi = Email::where('fav', true)->get();
 
         View::share('username', $adresa);
-        View::share('inbox_aktivan', '');
-        View::share('outbox_aktivan', '');
-        View::share('fav_aktivan', 'class="active"');
-        $this->layout->content = View::make('home.favorites')->with('mailovi', $mailovi);
+        View::share('viewing', 'favorites');
+        $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
     }
 
     public function sendmail()

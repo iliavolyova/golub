@@ -2,7 +2,13 @@
     {{ Notification::showAll() }}
 
     <div class="page-header">
-        <h2>@lang('home.inbox.title')</h2>
+        @if($viewing === 'inbox')
+            <h2>@lang('home.inbox.inbox')</h2>
+        @elseif($viewing === 'outbox')
+            <h2>@lang('home.inbox.outbox')</h2>
+        @elseif($viewing === 'favorites')
+            <h2>@lang('home.inbox.favorites')</h2>
+        @endif
     </div>
 
     <div class="row col-md-12">
@@ -20,8 +26,8 @@
                                 </span>
                                 <a data-toggle="collapse" data-parent="#accordion" href="{{'#msg' . $mail->id}}">
                                     <span id="{{'mailsender' . $mail->id}}"
-                                          data-addr="{{$mail->sender}}"
-                                          class="col-md-3">{{ $mail->sender_fullname }}</span>
+                                          data-addr="{{$viewing !== 'outbox' ? $mail->sender : $mail->receiver}}"
+                                          class="col-md-3">{{$viewing !== 'outbox' ? $mail->sender_fullname : $mail->receiver_fullname }}</span>
                                     <span id="{{'mailsubject' . $mail->id}}" class="col-md-8">{{ $mail->subject }}</span>
                                 </a>
                             </span>
@@ -35,8 +41,10 @@
 
                             <br><hr/>
                             <span class="btn-group">
-                                <button class="btn btn-info" onclick=reply({{$mail->id}})>Reply</button>
-                                <button class="btn btn-info" onclick=forward({{$mail->id}})>Forward</button>
+                                @if($viewing != 'outbox')
+                                <button class="btn btn-info" onclick=reply({{$mail->id}})>@lang('home.inbox.reply')</button>
+                                @endif
+                                <button class="btn btn-info" onclick=forward({{$mail->id}})>@lang('home.inbox.forward')</button>
                             </span>
                         </div>
                     </div>

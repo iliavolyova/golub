@@ -22,8 +22,7 @@ Route::get('/', array('as' => 'login', 'uses' => 'LoginController@login'));
 Route::get('/lang/{lang}', function($lang)
 {
     Session::put('my.locale', $lang);
-    $localeCookie = Cookie::forever( 'golublocale', $lang );
-    return Redirect::back()->withCookie($localeCookie);
+    return Redirect::back();
 });
 
 

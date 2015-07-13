@@ -19,7 +19,7 @@ App::before(function($request)
 
 App::after(function($request, $response)
 {
-	//
+	setcookie('golublocale', Session::get('my.locale', Config::get('app.locale')));
 });
 
 /*

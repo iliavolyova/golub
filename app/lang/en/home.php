@@ -13,7 +13,11 @@ return array(
     ),
 
     'inbox' => array(
-        'title' => 'Inbox'
+        'inbox' => 'Inbox',
+        'outbox' => 'Outbox',
+        'favorites' => 'Favorites',
+        'reply' => 'Reply',
+        'forward' => 'Forward'
     ),
 
     'modal' => array(
@@ -21,7 +25,9 @@ return array(
         'subject' => 'Subject',
         'message' => 'Message',
         'send' => 'Send',
-        'cancel' => 'Cancel'
+        'cancel' => 'Cancel',
+        'required' => 'This field is required',
+        'valid_email' => 'The email must be valid'
     )
 
 );

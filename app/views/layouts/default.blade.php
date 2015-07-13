@@ -7,9 +7,9 @@
             <div class="navbar-header"><a class="navbar-brand" href="#">@lang('home.navbar.brand')</a></div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li {{$inbox_aktivan}} ><a href="/inbox">@lang('home.navbar.inbox')</a></li>
-                    <li {{$outbox_aktivan}} ><a href="/outbox">@lang('home.navbar.outbox')</a></li>
-                    <li {{$fav_aktivan}} ><a href="/favorites">@lang('home.navbar.favorites')</a></li>
+                    <li {{$viewing == 'inbox' ? 'class="active"' : ''}} ><a href="/inbox">@lang('home.navbar.inbox')</a></li>
+                    <li {{$viewing == 'outbox' ? 'class="active"' : ''}} ><a href="/outbox">@lang('home.navbar.outbox')</a></li>
+                    <li {{$viewing == 'favorites' ? 'class="active"' : ''}} ><a href="/favorites">@lang('home.navbar.favorites')</a></li>
                     <li><p class="navbar-btn">&nbsp;<a class="btn btn-info" onclick=compose()>@lang('home.navbar.compose')</a></p></li>
                 </ul>
 
@@ -49,11 +49,11 @@
                     {{ Form::open(array('route' => 'sendmail', 'method' => 'POST', 'class' => 'clearfix', 'id' => 'sendmailform')) }}
                     <div class="form-group">
                         <label for="tofield">@lang('home.modal.recipient')</label>
-                        {{ Form::text('To', '', array('class' => 'form-control required email', 'id' => 'tofield', 'data-placement' => 'top', 'data-trigger' => 'manual', 'data-content' => 'Must be valid email')) }}
+                        {{ Form::text('To', '', array('class' => 'form-control required email', 'id' => 'tofield', 'data-placement' => 'top', 'data-trigger' => 'manual', 'data-content' => Lang::get('home.modal.valid_email'))) }}
                     </div>
                     <div class="form-group">
                         <label for="subjectfield">@lang('home.modal.subject')</label>
-                        {{ Form::text('Subject', '', array('class' => 'form-control required', 'id' => 'subjectfield', 'data-placement' => 'top', 'data-trigger' => 'manual', 'data-content' => 'This field is required'))}}
+                        {{ Form::text('Subject', '', array('class' => 'form-control required', 'id' => 'subjectfield', 'data-placement' => 'top', 'data-trigger' => 'manual', 'data-content' => Lang::get('home.modal.required')))}}
                     </div>
                     <div class="form-group">
                         <label for="messagefield">@lang('home.modal.message')</label>

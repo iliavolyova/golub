@@ -104,9 +104,8 @@ var translations = {
 
 var reply = function(msgId){
     var locale = getCookie('golublocale');
-    console.log(locale);
 
-    $('#modal-title').html("Reply");
+    $('#modal-title').html(translations[locale]['reply_title']);
     $('#tofield').val($('#mailsender' + msgId).attr("data-addr"));
     $('#subjectfield').val('[re] ' + $('#mailsubject' + msgId).html());
 
@@ -119,7 +118,9 @@ var reply = function(msgId){
 };
 
 var forward = function(msgId){
-    $('#modal-title').html("Forward email");
+    var locale = getCookie('golublocale');
+
+    $('#modal-title').html(translations[locale]['forward_title']);
 
     $('#tofield').val('');
     $('#subjectfield').val('[fwd] ' + $('#mailsubject' + msgId).html());
@@ -132,7 +133,9 @@ var forward = function(msgId){
 };
 
 var compose = function(){
-    $('#modal-title').html("Compose new message");
+    var locale = getCookie('golublocale');
+
+    $('#modal-title').html(translations[locale]['compose_title']);
 
     $('#tofield').val('');
     $('#subjectfield').val('');

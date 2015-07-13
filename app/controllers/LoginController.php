@@ -21,7 +21,6 @@ class LoginController extends BaseController{
         // get auth url
         $url = Googlavel::authUrl();
         Session::set('my.locale', 'en');
-        Cookie::forever( 'golublocale', 'en' );
 
         return View::make('login.login')->with('googleauth', $url);
     }
