@@ -2,7 +2,7 @@
     {{ Notification::showAll() }}
 
     <div class="page-header">
-        <h2>Inbox</h2>
+        <h2>@lang('home.inbox.title')</h2>
     </div>
 
     <div class="row col-md-12">

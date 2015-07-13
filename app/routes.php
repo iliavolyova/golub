@@ -19,6 +19,13 @@ Route::get('/logout', function()
 });
 Route::get('/', array('as' => 'login', 'uses' => 'LoginController@login'));
 
+Route::get('/lang/{lang}', function($lang)
+{
+    Session::put('my.locale', $lang);
+    $localeCookie = Cookie::forever( 'golublocale', $lang );
+    return Redirect::back()->withCookie($localeCookie);
+});
+
 
 Route::get('/inbox', array('as' => 'inbox', 'uses' => 'HomeController@inbox'));
 Route::get('/outbox', array('as' => 'inbox', 'uses' => 'HomeController@outbox'));
