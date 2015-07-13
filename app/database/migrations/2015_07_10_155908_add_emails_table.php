@@ -26,7 +26,7 @@ class AddEmailsTable extends Migration {
             $t->string('receiver_fullname');
             $t->string('subject');
             $t->text('content');
-            $t->timestamp('tstamp');
+            $t->string('tstamp');
 
             $t->string('category'); // inbox / sent
             $t->boolean('fav');
