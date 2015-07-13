@@ -14,7 +14,7 @@ $.fn.goValidate = function() {
             regex: /^[\w\-\.\+]+\@[a-zA-Z0-9\.\-]+\.[a-zA-z0-9]{2,4}$/
         },
         phone: {
-            regex: /^[2-9]\d{2}-\d{3}-\d{4}$/,
+            regex: /^[2-9]\d{2}-\d{3}-\d{4}$/
         }
     };
     var validate = function(klass, value) {
@@ -89,8 +89,23 @@ $.fn.goValidate = function() {
 };
 $('form').goValidate();
 
+var translations = {
+    en : {
+        reply_title: 'Reply',
+        forward_title: 'Forward',
+        compose_title: 'Compose'
+    },
+    hr: {
+        reply_title: 'Odgovori',
+        forward_title: 'Šalji dalje',
+        compose_title: 'Nova poruka'
+    }
+};
 
 var reply = function(msgId){
+    var locale = getCookie('golublocale');
+    console.log(locale);
+
     $('#modal-title').html("Reply");
     $('#tofield').val($('#mailsender' + msgId).attr("data-addr"));
     $('#subjectfield').val('[re] ' + $('#mailsubject' + msgId).html());
@@ -146,3 +161,20 @@ $(function() {
         }
     });
 });
+
+function getCookie(c_name) {
+    var c_value = " " + document.cookie;
+    var c_start = c_value.indexOf(" " + c_name + "=");
+    if (c_start == -1) {
+        c_value = null;
+    }
+    else {
+        c_start = c_value.indexOf("=", c_start) + 1;
+        var c_end = c_value.indexOf(";", c_start);
+        if (c_end == -1) {
+            c_end = c_value.length;
+        }
+        c_value = unescape(c_value.substring(c_start,c_end));
+    }
+    return c_value;
+}

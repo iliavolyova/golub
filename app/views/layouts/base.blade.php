@@ -10,8 +10,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=8;FF=3;OtherUA=4">
     <base href="{{ URL::to('/') }}"/>
-    <title>{{ (!empty($head->title) ? $head->title . ' - ' : '') }} @lang('app.app.name')</title>
-    <meta name="description" content="{{ (!empty($head->description) ? $head->description : Lang::get('app.app.name')) }}">
+    <title>{{ (!empty($head->title) ? $head->title . ' - ' : '') }} @lang('app.app.title')</title>
+    <meta name="description" content="{{ (!empty($head->description) ? $head->description : Lang::get('app.app.title')) }}">
     <meta name="author" content="Ellipse Synergie">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_token" content="{{ csrf_token() }}" />
