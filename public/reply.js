@@ -92,7 +92,7 @@ $('form').goValidate();
 
 var reply = function(msgId){
     $('#modal-title').html("Reply");
-    $('#tofield').val($('#mailsender' + msgId).html());
+    $('#tofield').val($('#mailsender' + msgId).attr("data-addr"));
     $('#subjectfield').val('[re] ' + $('#mailsubject' + msgId).html());
 
     var message = $('#mailcontent' + msgId).html().replace(/<br>/g, '>');

@@ -2,7 +2,7 @@
     {{ Notification::showAll() }}
 
     <div class="page-header">
-        <h2>Inbox</h2>
+        <h2>Outbox</h2>
     </div>
 
     <div class="row col-md-12">
@@ -19,9 +19,7 @@
                                     </a>
                                 </span>
                                 <a data-toggle="collapse" data-parent="#accordion" href="{{'#msg' . $mail->id}}">
-                                    <span id="{{'mailsender' . $mail->id}}"
-                                          data-addr="{{$mail->sender}}"
-                                          class="col-md-3">{{ $mail->sender_fullname }}</span>
+                                    <span id="{{'mailsender' . $mail->id}}" data-addr="{{$mail->receiver}}" class="col-md-3">{{ $mail->receiver_fullname }}</span>
                                     <span id="{{'mailsubject' . $mail->id}}" class="col-md-8">{{ $mail->subject }}</span>
                                 </a>
                             </span>
@@ -35,7 +33,7 @@
 
                             <br><hr/>
                             <span class="btn-group">
-                                <button class="btn btn-info" onclick=reply({{$mail->id}})>Reply</button>
+                                <!-- <button class="btn btn-info" onclick=reply({{$mail->id}})>Reply</button> -->
                                 <button class="btn btn-info" onclick=forward({{$mail->id}})>Forward</button>
                             </span>
                         </div>

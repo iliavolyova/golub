@@ -7,10 +7,10 @@
             <div class="navbar-header"><a class="navbar-brand" href="#">@lang('home.header')</a></div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/inbox">Inbox</a></li>
-                    <li><a href="/outbox">Outbox</a></li>
-                    <li><a href="/favorites">Favorites</a></li>
-                    <li><p class="navbar-btn"><a class="btn btn-info" onclick=compose()>Compose</a></p></li>
+                    <li {{$inbox_aktivan}} ><a href="/inbox">Inbox</a></li>
+                    <li {{$outbox_aktivan}} ><a href="/outbox">Outbox</a></li>
+                    <li {{$fav_aktivan}} ><a href="/favorites">Favorites</a></li>
+                    <li><p class="navbar-btn">&nbsp;<a class="btn btn-info" onclick=compose()>Compose</a></p></li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
