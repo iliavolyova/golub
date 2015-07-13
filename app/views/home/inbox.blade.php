@@ -27,7 +27,12 @@
                                 <a data-toggle="collapse" data-parent="#accordion" href="{{'#msg' . $mail->id}}">
                                     <span id="{{'mailsender' . $mail->id}}"
                                           data-addr="{{$viewing !== 'outbox' ? $mail->sender : $mail->receiver}}"
-                                          class="col-md-3">{{$viewing !== 'outbox' ? $mail->sender_fullname : $mail->receiver_fullname }}</span>
+                                          class="col-md-3">
+                                        @if($viewing === 'favorites')
+                                            <span class="{{'glyphicon glyphicon-arrow-' . ($mail->sender === $username) ? 'right' : 'left'  }}"
+                                        @endif
+                                        {{$viewing !== 'outbox' ? $mail->sender_fullname : $mail->receiver_fullname }}
+                                    </span>
                                     <span id="{{'mailsubject' . $mail->id}}" class="col-md-8">{{ $mail->subject }}</span>
                                 </a>
                             </span>
