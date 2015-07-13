@@ -13,6 +13,7 @@
     <meta name="description" content="{{ (!empty($head->description) ? $head->description : Lang::get('app.app.name')) }}">
     <meta name="author" content="Ellipse Synergie">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_token" content="{{ csrf_token() }}" />
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//google-analytics.com">

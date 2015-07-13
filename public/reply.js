@@ -126,3 +126,22 @@ var compose = function(msgId){
 
     $('#modal_reply').modal('show');
 };
+
+var fav = function(msgId){
+    $.ajax({
+        type: "POST",
+        url: '/fav',
+        data: {messageId: msgId},
+        dataType: 'JSON'
+    }).done(function(msg){
+        console.log("returned: ", msg);
+    });
+};
+
+$(function() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-Token': $('meta[name="_token"]').attr('content')
+        }
+    });
+});

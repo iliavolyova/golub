@@ -42,7 +42,7 @@
                     {{ Form::open(array('route' => 'sendmail', 'method' => 'POST', 'class' => 'clearfix', 'id' => 'sendmailform')) }}
                     <div class="form-group">
                         <label for="tofield">Recipient</label>
-                        {{ Form::text('To', '', array('class' => 'form-control email', 'id' => 'tofield', 'data-placement' => 'top', 'data-trigger' => 'manual', 'data-content' => 'Must be valid email')) }}
+                        {{ Form::text('To', '', array('class' => 'form-control required email', 'id' => 'tofield', 'data-placement' => 'top', 'data-trigger' => 'manual', 'data-content' => 'Must be valid email')) }}
                     </div>
                     <div class="form-group">
                         <label for="subjectfield">Subject</label>

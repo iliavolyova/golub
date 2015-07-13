@@ -25,5 +25,6 @@ Route::get('/outbox', array('as' => 'inbox', 'uses' => 'HomeController@outbox'))
 Route::get('/favorites', array('as' => 'inbox', 'uses' => 'HomeController@favorites'));
 
 Route::post('/sendmail', array('as' => 'sendmail', 'uses' => 'HomeController@sendmail'));
+Route::post('/fav', array('as' => 'fav', 'uses' => 'HomeController@setfavorite'));
 
 Route::get('404', array('as' => '404', 'uses' => 'ErrorController@get404'));

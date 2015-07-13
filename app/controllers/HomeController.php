@@ -184,4 +184,14 @@ class HomeController extends BaseController {
     {
         dd(Input::get('To'));
     }
+
+    public function setfavorite(){
+
+        Notification::infoInstant("Favorited!");
+
+        $id = Input::get('messageId');
+        var_dump($id);
+
+        return Response::json(['your response here']);
+    }
 }
