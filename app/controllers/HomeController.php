@@ -2,7 +2,7 @@
 
 class HomeController extends BaseController {
 
-    private function send_mail($service, $moja_adresa, $primatelj, $subject, $msg)
+    private function posalji_poruku($service, $moja_adresa, $primatelj, $subject, $msg)
     {
         $mail = new PHPMailer();
         $mail->CharSet = "UTF-8";
@@ -23,11 +23,12 @@ class HomeController extends BaseController {
         $service->users_messages->send("me", $m); // me je magicna varijabla, al svejedno treba $moja_adresa
     }
 
-    private function pohrani_poruku($service, $moja_adresa, $message)
+    private function pohrani_poruku($service, $moja_adresa, $category, $message)
     {
-        $sender = '';
-        $receiver = '';
+        $sender = ''; $sfull = '';
+        $receiver = ''; $rfull = '';
         $hdrs = $message->getPayload()->getHeaders();
+        $tsmp = 0;
         foreach ($hdrs as $komad) {
             if ($komad->getName() == "From")
                 $sender = $komad->getValue();
@@ -35,15 +36,56 @@ class HomeController extends BaseController {
                 $receiver = $komad->getValue();
             if ($komad->getName() == "Subject")
                 $subject = $komad->getValue();
+            if ($komad->getName() == "Date") {
+               // Log::info($komad->getValue());
+
+                $tsmp =  $komad->getValue();
+            }
+           // Log::info($komad->getName());
+
         }
 
         $p = new Email;
 
+
+        $sender = str_replace('"', '', $sender);
+        $receiver = str_replace('"', '', $receiver);
+
+        if (strpos($sender,'<') !== false) {
+            $pmail = strpos($sender, '<');
+            $kmail = strpos($sender, '>');
+
+            $sfull = substr($sender, 0, $pmail);
+            $sender = substr($sender, $pmail + 1, $kmail - $pmail - 1);
+        }
+        else
+        {
+            $sfull = $sender;
+        }
+
+        if (strpos($receiver,'<') !== false) {
+            $pmail = strpos($receiver, '<');
+            $kmail = strpos($receiver, '>');
+
+            $rfull = substr($receiver, 0, $pmail);
+            $receiver = substr($receiver, $pmail + 1, $kmail - $pmail - 1);
+        }
+        else
+        {
+            $rfull = $receiver;
+        }
+
+
         $p->sender = $sender;
         $p->receiver = $receiver;
+        $p->sender_fullname = $sfull;
+        $p->receiver_fullname = $rfull;
         $p->google_id = $message->id;
         $p->subject = $subject;
         $p->account = $moja_adresa;
+        $p->category = $category;
+        $p->fav = false;
+        $p->tstamp = $tsmp;
 
         $pokusaj1 = base64_decode($message->getPayload()->getBody()->getData());
         $pokusaj2 = $message->getPayload()->getParts();
@@ -64,7 +106,7 @@ class HomeController extends BaseController {
     }
 
 
-    private function preuzmi_poruke($service, $client, $moja_adresa, $idevi)
+    private function preuzmi_poruke($service, $client, $moja_adresa, $category, $idevi)
     {
         $client->setUseBatch(true);
         $batch = new Google_Http_Batch($client);
@@ -80,11 +122,11 @@ class HomeController extends BaseController {
 
         foreach ($results as $result)
         {
-            $this->pohrani_poruku($service, $moja_adresa, $result);
+            $this->pohrani_poruku($service, $moja_adresa, $category, $result);
         }
     }
 
-    private function refresh_db($service, $client, $moja_adresa)
+    private function refresh_db($service, $client, $moja_adresa, $category)
     {
         $limitirano = false;
         $limit = 0;
@@ -138,7 +180,33 @@ class HomeController extends BaseController {
                 $nastavi = true;
         }
 
-        $this->preuzmi_poruke($service, $client, $moja_adresa, $idevi);
+        $this->preuzmi_poruke($service, $client, $moja_adresa, $category, $idevi);
+    }
+
+    var $service;
+    var $srv2;
+    var $tok;
+    var $client;
+
+    public function prepare_google()
+    {
+        $this->service = Googlavel::getService('Gmail');
+
+        $this->srv2 = Googlavel::getService('Oauth2');
+        $this->tok = Googlavel::getToken();
+        $this->client = Googlavel::getClient();
+
+        $this->tok = json_decode($this->tok)->access_token;
+        try {
+            $adresa = $this->srv2->tokeninfo(['access_token' => $this->tok])->getEmail();
+        } catch (Google_Auth_Exception $e){
+            Notification::error("Google API token expired. Please log in again.");
+            return Redirect::to('/');
+        }
+
+        $this->refresh_db($this->service, $this->client, $adresa, "inbox");
+
+        return $adresa;
     }
 
     /**
@@ -146,43 +214,53 @@ class HomeController extends BaseController {
      */
     public function inbox()
     {
-        // Get the google service (related scope must be set)
-        $service = Googlavel::getService('Gmail');
+        $adresa = $this->prepare_google();
 
-        $srv2 = Googlavel::getService('Oauth2');
-        $tok = Googlavel::getToken();
-        $client = Googlavel::getClient();
-
-        $tok = json_decode($tok)->access_token;
-        try {
-            $adresa = $srv2->tokeninfo(['access_token' => $tok])->getEmail();
-        } catch (Google_Auth_Exception $e){
-            Notification::error("Google API token expired. Please log in again.");
-            return Redirect::to('/');
-        }
+        $mailovi = Email::where('receiver', 'LIKE', '%' . $adresa . '%')->get();
 
         View::share('username', $adresa);
-
-        $this->refresh_db($service, $client, $adresa);
-
-        $mailovi = Email::all();
-
+        View::share('inbox_aktivan', 'class="active"');
+        View::share('outbox_aktivan', '');
+        View::share('fav_aktivan', '');
         $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
+
     }
 
     public function outbox()
     {
+        $adresa = $this->prepare_google();
 
+        $mailovi = Email::where('sender', 'LIKE', '%' . $adresa . '%')->get();
+
+        View::share('username', $adresa);
+        View::share('inbox_aktivan', '');
+        View::share('outbox_aktivan', 'class="active"');
+        View::share('fav_aktivan', '');
+        $this->layout->content = View::make('home.outbox')->with('mailovi', $mailovi);
     }
 
     public function favorites()
     {
+        $adresa = $this->prepare_google();
 
+        $mailovi = Email::where('fav', true)->get();
+
+        View::share('username', $adresa);
+        View::share('inbox_aktivan', '');
+        View::share('outbox_aktivan', '');
+        View::share('fav_aktivan', 'class="active"');
+        $this->layout->content = View::make('home.favorites')->with('mailovi', $mailovi);
     }
 
     public function sendmail()
     {
-        dd(Input::get('To'));
+        $adresa = $this->prepare_google();
+
+        // dd(Input::get('To'));
+        $this->posalji_poruku($this->service, $adresa,
+            Input::get('To'), Input::get('Subject'), Input::get('Message'));
+
+        return Redirect::action("HomeController@inbox");
     }
 
     public function setfavorite(){
@@ -191,7 +269,11 @@ class HomeController extends BaseController {
 
         $id = Input::get('messageId');
 
-        // ovdje treba promijeniti vrijednost flaga fav za $id emaila i to je to.
+
+        $msg = Email::find($id);
+        $msg->fav = !$msg->fav ;
+        $msg->save();
+
 
         return Response::json(array('status' => 'success'));
     }

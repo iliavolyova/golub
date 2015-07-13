@@ -107,7 +107,7 @@ var reply = function(msgId){
     console.log(locale);
 
     $('#modal-title').html("Reply");
-    $('#tofield').val($('#mailsender' + msgId).html());
+    $('#tofield').val($('#mailsender' + msgId).attr("data-addr"));
     $('#subjectfield').val('[re] ' + $('#mailsubject' + msgId).html());
 
     var message = $('#mailcontent' + msgId).html().replace(/<br>/g, '>');

@@ -2,7 +2,7 @@
     {{ Notification::showAll() }}
 
     <div class="page-header">
-        <h2>@lang('home.inbox.title')</h2>
+        <h2>Favourites</h2>
     </div>
 
     <div class="row col-md-12">
@@ -35,7 +35,7 @@
 
                             <br><hr/>
                             <span class="btn-group">
-                                <button class="btn btn-info" onclick=reply({{$mail->id}})>Reply</button>
+                                 <button class="btn btn-info" onclick=reply({{$mail->id}})>Reply</button>
                                 <button class="btn btn-info" onclick=forward({{$mail->id}})>Forward</button>
                             </span>
                         </div>
