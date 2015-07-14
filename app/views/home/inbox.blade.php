@@ -29,11 +29,12 @@
                                           data-addr="{{$viewing !== 'outbox' ? $mail->sender : $mail->receiver}}"
                                           class="col-md-3">
                                         @if($viewing === 'favorites')
-                                            <span class="{{'glyphicon glyphicon-arrow-' . ($mail->sender === $username) ? 'right' : 'left'  }}"
+                                            <span class="{{'glyphicon glyphicon-arrow-' . ($mail->sender === $username ? 'right' : 'left')  }}"></span>
                                         @endif
                                         {{$viewing !== 'outbox' ? $mail->sender_fullname : $mail->receiver_fullname }}
                                     </span>
-                                    <span id="{{'mailsubject' . $mail->id}}" class="col-md-8">{{ $mail->subject }}</span>
+                                    <span class="col-md-1">{{\Carbon\Carbon::createFromTimeStamp((int)$mail->tstamp)->diffForHumans()}}</span>
+                                    <span id="{{'mailsubject' . $mail->id}}" class="col-md-7">{{ $mail->subject }}</span>
                                 </a>
                             </span>
                         </h4>

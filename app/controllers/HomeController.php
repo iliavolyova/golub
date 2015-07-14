@@ -1,5 +1,9 @@
 <?php
 
+require 'vendor/autoload.php';
+
+use Carbon\Carbon;
+
 class HomeController extends BaseController {
 
     private function posalji_poruku($service, $moja_adresa, $primatelj, $subject, $msg)
@@ -216,7 +220,7 @@ class HomeController extends BaseController {
     {
         $adresa = $this->prepare_google();
 
-        $mailovi = Email::where('receiver', 'LIKE', '%' . $adresa . '%')->get();
+        $mailovi = Email::where('receiver', 'LIKE', '%' . $adresa . '%')->where('account', $adresa)->orderBy('tstamp', 'DESC')->get();
 
         View::share('username', $adresa);
         View::share('viewing', 'inbox');
@@ -228,7 +232,7 @@ class HomeController extends BaseController {
     {
         $adresa = $this->prepare_google();
 
-        $mailovi = Email::where('sender', 'LIKE', '%' . $adresa . '%')->get();
+        $mailovi = Email::where('sender', 'LIKE', '%' . $adresa . '%')->where('account', $adresa)->orderBy('tstamp', 'DESC')->get();
 
         View::share('username', $adresa);
         View::share('viewing', 'outbox');
@@ -239,7 +243,7 @@ class HomeController extends BaseController {
     {
         $adresa = $this->prepare_google();
 
-        $mailovi = Email::where('fav', true)->get();
+        $mailovi = Email::where('fav', true)->where('account', $adresa)->orderBy('tstamp', 'DESC')->get();
 
         View::share('username', $adresa);
         View::share('viewing', 'favorites');

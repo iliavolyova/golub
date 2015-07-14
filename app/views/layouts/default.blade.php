@@ -7,9 +7,9 @@
             <div class="navbar-header"><a class="navbar-brand" href="#">@lang('home.navbar.brand')</a></div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li {{$viewing == 'inbox' ? 'class="active"' : ''}} ><a href="/inbox">@lang('home.navbar.inbox')</a></li>
-                    <li {{$viewing == 'outbox' ? 'class="active"' : ''}} ><a href="/outbox">@lang('home.navbar.outbox')</a></li>
-                    <li {{$viewing == 'favorites' ? 'class="active"' : ''}} ><a href="/favorites">@lang('home.navbar.favorites')</a></li>
+                    <li {{$viewing == 'inbox' ? 'class="active"' : ''}} ><a href="{{url('/inbox')}}">@lang('home.navbar.inbox')</a></li>
+                    <li {{$viewing == 'outbox' ? 'class="active"' : ''}} ><a href="{{url('/outbox')}}">@lang('home.navbar.outbox')</a></li>
+                    <li {{$viewing == 'favorites' ? 'class="active"' : ''}} ><a href="{{url('/favorites')}}">@lang('home.navbar.favorites')</a></li>
                     <li><p class="navbar-btn">&nbsp;<a class="btn btn-info" onclick=compose()>@lang('home.navbar.compose')</a></p></li>
                 </ul>
 
@@ -17,8 +17,8 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" > @lang('home.navbar.language') <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/lang/en">English</a></li>
-                            <li><a href="/lang/hr">Hrvatski</a></li>
+                            <li><a href="{{url('/lang/en')}}">English</a></li>
+                            <li><a href="{{url('/lang/hr')}}">Hrvatski</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
