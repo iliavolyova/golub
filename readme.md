@@ -1,25 +1,50 @@
-## Laravel PHP Framework
+This is a simple Gmail web-facade project built as part of a college course. 
+The rest of the provided information is intended to give our instructors a general idea of how it works.
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/downloads.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+#Golub Mail
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, and caching.
+GolubMail je jednostavno web sučelje za upravljanje Gmail računima i e-poštom. Korisnici se spajaju direktno preko svojih Google računa,
+te sve akcije obavljaju direktno preko Googleovog API-a. 
+Uz slanje i primanje elektroničke pošte, moguće je označavati važnije poruke radi lakšeg pristupa.
+Aplikacija podržava sučelje lokalizirano na engleski i hrvatski jezik.
 
-Laravel aims to make the development process a pleasing one for the developer without sacrificing application functionality. Happy developers make the best code. To this end, we've attempted to combine the very best of what we have seen in other web frameworks, including frameworks implemented in other languages, such as Ruby on Rails, ASP.NET MVC, and Sinatra.
+S tehničke strane, GolubMail radi na Laravel 4 frameworku uz nekoliko dodatnih biblioteka, te koristi MySQL bazu.
 
-Laravel is accessible, yet powerful, providing powerful tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+##Laravel 4
 
-## Official Documentation
+Laravel je framework koji zajedno sa svojim skupom popratnih biblioteka čini zaokruženu cjelinu za izradu web aplikacija po MVC (Model View Controller) paradigmi.
+Dodatne biblioteke se dodaju popratnim alatom Composer, koji ujedno vodi brigu o kompatibilnosti među bibliotekama koje ovise jedne o drugima.
+Biblioteke se navedu u datateci composer.json te lako instaliraju naredbom 
 
-Documentation for the entire framework can be found on the [Laravel website](http://laravel.com/docs).
+'''
+composer update
+'''
 
-### Contributing To Laravel
+##Arhitektura projekta
 
-**All issues and pull requests should be filed on the [laravel/framework](http://github.com/laravel/framework) repository.**
+Svi elementi koji se tiču *izrade* projekta nalaze su direktoriju app. Neki od važnijih poddirektorija za ovaj projekt su: 
+- config direktorij sadrži sve konfiguracijske datateke
+- controllers - sadrži naše kontrolere
+- database - sadrži migracije i inicijalne podatke za bazu podataka
+- views - sadrži pregledne datoteke (viewove) koje se pune sadržajem i pretvaraju u HTML koji ide klijentu
+- osim ovih direktorija imamo 2 važne datoteke u samom app direktoriju:
+    - routes.php: ovdje se čuvaju pozivi funkcija koji pretvaraju zahtjev za određenom rutom proslijeđuju odgovarajućim kontrolerima na obradu
+    - filters.php: ovdje je moguće definirati *hook*-ove prije ključnih momenata u radu aplikacije (prije nego je započeta obrada zahtjeva, ili nakon)
+    
+Navedeni direktoriji su ujedno i ključne datoteke gdje smo pisali kod za ovaj projekt.
 
-### License
+##Google OAuth i Gmail API
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+###Postavke za projekt koji koristi Google API
+
+###Google PHP client biblioteka
+
+##Frontend 
+
+###Bootstrap
+
+###Blade
+
+###Lokalizacija
+
+###Backend i baza
