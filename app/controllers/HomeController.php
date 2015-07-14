@@ -6,6 +6,19 @@ use Carbon\Carbon;
 
 class HomeController extends BaseController {
 
+    /*
+     * posalji_poruku
+     *
+     * Pomoćna funkcija za slanje mailova kroz GMail API (koristi i PHPMailer).
+     *
+     * @param $service
+     * @param $moja_adresa e-mail string
+     * @param $primatelj e-mail string
+     *
+     * @param $subject subject string
+     * @param $msg poruka kao običan string (funkcija će pripremiti mail sintaksu)
+     */
+
     private function posalji_poruku($service, $moja_adresa, $primatelj, $subject, $msg)
     {
         $mail = new PHPMailer();
@@ -24,15 +37,29 @@ class HomeController extends BaseController {
         $data = base64_encode($mime);
         $data = str_replace(array('+','/','='),array('-','_',''),$data); // url safe
         $m->setRaw($data);
-        $service->users_messages->send("me", $m); // me je magicna varijabla, al svejedno treba $moja_adresa
+        $service->users_messages->send("me", $m); // me je magicna varijabla, ali svejedno treba $moja_adresa
     }
+
+    /*
+     * pohrani_poruku
+     *
+     * Pomoćna funkcija za pohranjivanje mail objekta u bazu podataka
+     *
+     * @param $service
+     * @param $moja_adresa e-mail string
+     * @param $category za buduću eventualnu organizaciju (sad je uvijek 'inbox', ne uključuje samo chat poruke)
+     * @param $message Gmail_Message objekt
+     *
+     */
 
     private function pohrani_poruku($service, $moja_adresa, $category, $message)
     {
         $sender = ''; $sfull = '';
         $receiver = ''; $rfull = '';
         $hdrs = $message->getPayload()->getHeaders();
-        $tsmp = 0;
+        $tsmp = 0; // timestamp
+
+        // prolazimo headerima maila i izvlačimo osnovne informacije
         foreach ($hdrs as $komad) {
             if ($komad->getName() == "From")
                 $sender = $komad->getValue();
@@ -46,15 +73,16 @@ class HomeController extends BaseController {
                 $tsmp =  (string)$date->getTimestamp();
             }
            // Log::info($komad->getName());
-
         }
 
+        // novi redak u bazi
         $p = new Email;
-
 
         $sender = str_replace('"', '', $sender);
         $receiver = str_replace('"', '', $receiver);
 
+        // neki mailovi imaju adrese oblika "ime prezime" <adresa>, neki samo adresa
+        // testiramo prvo za sendera...
         if (strpos($sender,'<') !== false) {
             $pmail = strpos($sender, '<');
             $kmail = strpos($sender, '>');
@@ -67,6 +95,7 @@ class HomeController extends BaseController {
             $sfull = $sender;
         }
 
+        // ... i potom za receivera
         if (strpos($receiver,'<') !== false) {
             $pmail = strpos($receiver, '<');
             $kmail = strpos($receiver, '>');
@@ -79,7 +108,7 @@ class HomeController extends BaseController {
             $rfull = $receiver;
         }
 
-
+        // gradimo redak u tablici
         $p->sender = $sender;
         $p->receiver = $receiver;
         $p->sender_fullname = $sfull;
@@ -91,9 +120,12 @@ class HomeController extends BaseController {
         $p->fav = false;
         $p->tstamp = $tsmp;
 
+        // nekad su poruke pohranjene u payloadu (ako su dovoljno male)
         $pokusaj1 = base64_decode($message->getPayload()->getBody()->getData());
+        // a nekad u Gmail_Message_Part
         $pokusaj2 = $message->getPayload()->getParts();
 
+        // u potonjem slučaju spajamo sve dijelove
         $poruka = '';
         foreach ($pokusaj2 as $tp) {
             //echo '>'.$tp->getMimeType()."<";
@@ -101,17 +133,32 @@ class HomeController extends BaseController {
                 $poruka = base64_decode($tp->getBody()->getData());
         }
 
+        // na kraju odabiremo pravu verziju testiranjem, jer api nema flaga
         if (strlen($pokusaj1) > strlen($poruka))
             $poruka = $pokusaj1;
 
+        // pohranjujemo mail
         $p->content = str_replace("\n", "<br />", $poruka);;
-
         $p->save();
     }
 
 
+    /*
+     * preuzmi_poruke
+     *
+     * Pomoćna funkcija za brzo pohranjivanje niza mail objekata u bazu podataka
+     *
+     * @param $service
+     * @param $client
+     * @param $moja_adresa e-mail string
+     * @param $category za buduću eventualnu organizaciju (sad je uvijek 'inbox', ne uključuje samo chat poruke)
+     * @param $idevi polje google-id stringova
+     *
+     */
+
     private function preuzmi_poruke($service, $client, $moja_adresa, $category, $idevi)
     {
+        // koristimo batch radi bržeg dohvaćanja većeg broja poruka
         $client->setUseBatch(true);
         $batch = new Google_Http_Batch($client);
 
@@ -130,8 +177,20 @@ class HomeController extends BaseController {
         }
     }
 
+    /*
+       * refresh_db
+       *
+       * Pomoćna funkcija za pohranjivanje mail objekta u bazu podataka
+       *
+       * @param $client
+       * @param $moja_adresa e-mail string
+       * @param $category za buduću eventualnu organizaciju (sad je uvijek 'inbox', ne uključuje samo chat poruke)
+       * @param $idevi polje google-id stringova
+       *
+       */
     private function refresh_db($service, $client, $moja_adresa, $category)
     {
+        // dohvaćamo samo prvih 50 poruka pri prvom spajanju
         $limitirano = false;
         $limit = 0;
 
@@ -140,13 +199,16 @@ class HomeController extends BaseController {
             $limit = 50;
         }
 
+        // nastavljamo dok ima novih poruka
         $nastavi = true;
         $stranica = 0;
 
+        // ne spremamo mailove odmah, već ćemo kasnije napraviti batch request (v. pomoćne funkcije iznad)
         $idevi = array();
 
         while ($nastavi) {
 
+            // biramo sve poruke osim chat poruka
             $params = array('q' => '-in:chats', 'maxResults' => (string)10);
             if ($stranica != 0)
                 $params['pageToken'] = $stranica;
@@ -192,8 +254,18 @@ class HomeController extends BaseController {
     var $tok;
     var $client;
 
+    /*
+      * prepare_google
+      *
+      * Pomoćna funkcija za incijalizaciju API-a, dobivanje osnovnih informacija i osvježavanje baze
+      *
+      * @return string, e-mail adresa vlasnika accounta
+      *
+      */
     public function prepare_google()
     {
+        // pripremamo api, te identifikacijske objekte
+        // također tražimo adresu trenutnog korisnika (ona identificira korisnika u bazi)
         $this->service = Googlavel::getService('Gmail');
 
         $this->srv2 = Googlavel::getService('Oauth2');
@@ -208,6 +280,7 @@ class HomeController extends BaseController {
             return Redirect::to('/');
         }
 
+        // osvježavamo popis mailova
         $this->refresh_db($this->service, $this->client, $adresa, "inbox");
 
         return $adresa;
@@ -215,6 +288,8 @@ class HomeController extends BaseController {
 
     /**
      * Inbox
+     *
+     * Osnovna ruta, prikazuje popis primljenih mailova.
      */
     public function inbox()
     {
@@ -223,11 +298,17 @@ class HomeController extends BaseController {
         $mailovi = Email::where('receiver', 'LIKE', '%' . $adresa . '%')->where('account', $adresa)->orderBy('tstamp', 'DESC')->get();
 
         View::share('username', $adresa);
+        // koristimo isti view za sve mape, pa ovako biramo ime mape koje će se prikazati:
         View::share('viewing', 'inbox');
         $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
 
     }
 
+    /**
+     * Inbox
+     *
+     * Osnovna ruta, prikazuje popis poslanih mailova.
+     */
     public function outbox()
     {
         $adresa = $this->prepare_google();
@@ -239,6 +320,11 @@ class HomeController extends BaseController {
         $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
     }
 
+    /**
+     * favorites
+     *
+     * Osnovna ruta, prikazuje popis mailova označenih kao favorit.
+     */
     public function favorites()
     {
         $adresa = $this->prepare_google();
@@ -250,6 +336,11 @@ class HomeController extends BaseController {
         $this->layout->content = View::make('home.inbox')->with('mailovi', $mailovi);
     }
 
+    /**
+     * sendmail
+     *
+     * Ova se funkcija poziva kad korisnik preko GUI forme klikne na slanje maila.
+     */
     public function sendmail()
     {
         $adresa = $this->prepare_google();
@@ -261,6 +352,11 @@ class HomeController extends BaseController {
         return Redirect::action("HomeController@inbox");
     }
 
+    /**
+     * setfavorite
+     *
+     * Ova se funkcija poziva kad korisnik preko GUI popisa mailova klikne na checkbox za favorite.
+     */
     public function setfavorite(){
 
         Notification::infoInstant("Favorited!");
@@ -272,7 +368,7 @@ class HomeController extends BaseController {
         $msg->fav = !$msg->fav ;
         $msg->save();
 
-
+        // poziv je AJAX, pa za potrebe debuggiranja javljamo uspjeh
         return Response::json(array('status' => 'success'));
     }
 }
