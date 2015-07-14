@@ -34,10 +34,10 @@ Svi elementi koji se tiču *izrade* projekta nalaze su direktoriju ***app***. Ne
  - **views** koji sadrži pregledne datoteke (viewove) koje se pune sadržajem i pretvaraju u HTML koji ide klijentu
  
  - osim ovih direktorija imamo 2 važne datoteke u samom **app** direktoriju:
-    - *routes.php*: ovdje se čuvaju pozivi funkcija koji pretvaraju zahtjev za određenom rutom proslijeđuju odgovarajućim kontrolerima na obradu
-    - *filters.php*: ovdje je moguće definirati *hookove* prije ključnih momenata u radu aplikacije (prije nego je započeta obrada zahtjeva, ili nakon)
+    - *routes.php*: ovdje se čuvaju pozivi funkcija koje zahtjev za određenom rutom proslijeđuju odgovarajućim kontrolerima na obradu
+    - *filters.php*: ovdje je moguće definirati *hookove* prije ključnih momenata u radu aplikacije (prije nego je započeta obrada zahtjeva, ili nakon). Primjerice, nakon svakog zahtjeva dodajemo kolačić sa trenutno odabranim jezikom radi javascripta na klijentu.
     
-Navedeni direktoriji su ujedno i ključne datoteke gdje smo pisali kod za ovaj projekt.
+U navedenim direktorijima su ujedno i ključne datoteke koje sadrže gotovo sav kod za ovaj projekt.
 
 ---
 
@@ -45,6 +45,7 @@ Navedeni direktoriji su ujedno i ključne datoteke gdje smo pisali kod za ovaj p
 
 ###Google OAuth i Gmail API
 Google OAuth je univerzalni servis za prijavu putem Googleovog računa. GMail API omogućava potpun pristup sadržaju korisnikovog GMail sandučića. Nažalost, ne nudi puno više od toga, pa smo primjerice morali koristiti **PHPMailer** za ispravno formatiranje poruka, u skladu sa standardima e-pošte. 
+Kako bismo lakše integrirali Googleovu *low-level* biblioteku za baratanje API-jima, koristili smo biblioteku Googlavel koja pruža sučelje izvedeno kao Laravelov servis prema kontrolerima.
 
 ---
 
@@ -72,9 +73,8 @@ Pritom koristimo *batch* zahtjeve Googleovog API-a. Oni nam omogućuju simultano
 
 ###Bootstrap
 
-Bootstrap je framework za izradu GUI elemenata na HTML stranicama. Koristimo njegove klase kako bismo dobili GUI elemente poput *checkboxa* i *buttona*. 
-
-Bootstrap također koristimo za postavu (*layout*) stranice, te modalne (*popup*) prozore za pisanje poruka, odnosno odgovaranje na ili prosljeđivanje poruka. 
+Bootstrap je framework za efikasnu raspodjelu HTML elemenata na web stranici koja izgleda dobro na ekranima različitih veličina. Njegove ekstenzije omogućavaju i izradu naprednijih komponenti, kao
+što su lista propadajućih (*collapsable*) elemenata u kojima se prikazuju poruke, te modalni prozori u kojima se nalaze forme za pisanje poruka.  
 
 ---
 
@@ -93,13 +93,22 @@ Mi smo koristili *bladeove*:
  - za specifične dizajnove stranica za prijavu i pregled poruka i
  - za dizajn pregleda poruka.
 
+###Forme i javascript
+
+Forme za slanje e-pošte stvaraju se dinamički u Bootstrapovom modalnom prozoru, ovisno o kontekstu poruke (odgovor na poruku, proslijeđivanje, ili nova poruka). Ovo se odvija kroz Javascript skriptu,
+koja također vodi brigu o lokalizaciji formi.
+
+Označavanje formi također je izvedeno kroz klijentski javascript kod, koristeći JQuery-jev ajax poziv za POST metodu. Ovakav način rada omogućava ugodno korisničko iskustvo označavanja
+poruka bez da se stranica mora osvježavati nakon svakog označavanja.
+
 ---
 
 ###Lokalizacija
 
-Koristili smo Laravel alate za višejezičnost. U osnovi GolubMail nudi dva jezika (Hrvatski i Engleski). 
+Koristili smo dodatnu biblioteku Carbon za prevođenje sadržaja koji se *renderira* na serveru, te vlastiti lokalizacijski mehanizam za klijentski kod. 
+U osnovi GolubMail nudi dva jezika (Hrvatski i Engleski). 
 
-Poruke specifične jezicima pohranjene su u */app/lang{hr,en}*.
+Poruke specifične jezicima pohranjene su u */app/lang/{hr,en}*.
 Svakoj jedinici aplikacije - kod nas su to dio aplikacije koji prijavljuje korisnika kroz OAuth te dio aplikacije za prikaz poruka - pridružuje se rječnik. 
 
 U pogledu (*view*) u kojem se prikazuje dani string, naprosto se poziva ključ iz rječnika kojeg Laravel odabire ovisno o jedinici aplikacije. 
