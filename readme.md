@@ -98,8 +98,11 @@ Mi smo koristili *bladeove*:
 Forme za slanje e-pošte stvaraju se dinamički u Bootstrapovom modalnom prozoru, ovisno o kontekstu poruke (odgovor na poruku, proslijeđivanje, ili nova poruka). Ovo se odvija kroz Javascript skriptu,
 koja također vodi brigu o lokalizaciji formi.
 
-Označavanje formi također je izvedeno kroz klijentski javascript kod, koristeći JQuery-jev ajax poziv za POST metodu. Ovakav način rada omogućava ugodno korisničko iskustvo označavanja
+Označavanje formi također je izvedeno kroz klijentski javascript kod, koristeći jQuery-jev ajax poziv za POST metodu. Ovakav način rada omogućava ugodno korisničko iskustvo označavanja
 poruka bez da se stranica mora osvježavati nakon svakog označavanja.
+
+Validacija formi izvedena je u potpunosti na klijentskoj strani koristeći funkciju koja elemente forme podvrgava usporedbi s regularnim izrazima za ispitivanje valjanosti email adrese, te popunjenosti polja forme.
+Kriterij za validaciju zadaje se unutar forme, a preko jQuerya se detektira koje validatore aplicirati na određeno polje.
 
 ---
 
